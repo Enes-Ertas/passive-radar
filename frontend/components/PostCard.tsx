@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface PostProps {
   _id: string;
   title: string;
   selftext: string;
   subreddit: string;
+  source: "reddit" | "upwork";
   permalink: string;
   created: string;
   onRemove: (id: string) => void;
@@ -19,6 +21,7 @@ export function PostCard({
   subreddit,
   permalink,
   created,
+  source,
   onRemove,
 }: PostProps) {
   const [open, setOpen] = useState(false);
@@ -39,7 +42,17 @@ export function PostCard({
 }
 
   return (
-    <Card className="w-full mb-4 shadow-sm">
+    <Card className="relative w-full mb-4 shadow-sm">
+           {/* Platform logo */}
+      <div className="absolute top-3 right-3 flex items-center space-x-1">
+        <Image
+          src={`/logos/${source}.svg`}
+          alt={source.charAt(0).toUpperCase() + source.slice(1)}
+          width={20}
+          height={20}
+        />
+        <span className="text-xs font-medium capitalize">{source}</span>
+      </div>
       <CardHeader>
         <CardTitle className="text-lg">{title}</CardTitle>
         <p className="text-sm text-muted-foreground">
@@ -47,6 +60,7 @@ export function PostCard({
         </p>
       </CardHeader>
       <CardContent>
+        
         <div
           className={`text-sm text-gray-700 whitespace-pre-line ${
             !open ? "line-clamp-3" : ""

@@ -147,6 +147,7 @@ def get_posts(
             "selftext": doc.get("selftext", ""),
             "subreddit": doc.get("subreddit", ""),
             "permalink": doc.get("permalink", ""),
+            "source": "reddit",
             "created": (doc.get("created").isoformat()
                         if hasattr(doc.get("created"), "isoformat") else doc.get("created", "")),
             "last_viewed_at": (doc.get("last_viewed_at").isoformat()
