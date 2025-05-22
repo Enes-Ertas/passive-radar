@@ -20,13 +20,14 @@ collection = db["reddit_posts"]
 
 # GPT prompt şablonu
 PROMPT_TEMPLATE = """
-Aşağıdaki başlık ve içerikte kişi yazılım, web sitesi, mobil uygulama, yapay zekâ entegrasyonu gibi hizmet ihtiyaçlarını mı dile getiriyor?  
-Sadece "EVET" ya da "HAYIR" olarak cevap ver.
+You are a bot that only flags actual job offers or developer hiring requests.
+Answer YES **only** if the post is explicitly **asking for** or **offering** paid developer work (e.g. “hiring a developer”, “for hire: React engineer”, "freelancer needed", “looking for backend help”).  
+Answer NO for any non-technical or sales/marketing/administrative roles and any personal project announcements, showcases, questions.
 
-Başlık: {title}
-
-İçerik: {text}
+Title: {title}
+Content: {text}
 """
+
 
 def ask_gpt(title, text):
     prompt = PROMPT_TEMPLATE.format(title=title, text=text)
@@ -59,10 +60,10 @@ def filter_posts():
         result = ask_gpt(title, text)
         print(f"[{result}] {title[:60]}")
 
-        if result in ["EVET", "HAYIR"]:
+        if result in ["YES", "NO"]:
             collection.update_one(
                 { "_id": post["_id"] },
-                { "$set": { "is_relevant": result == "EVET" } }
+                { "$set": { "is_relevant": result == "YES" } }
             )
 
         time.sleep(1.2)  # rate limit koruması

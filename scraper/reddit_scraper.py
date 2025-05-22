@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+import prawcore
 
 load_dotenv()
 
@@ -25,18 +26,45 @@ reddit = praw.Reddit(
 
 # Subreddit listesi ve zaman sınırı
 SUBREDDITS = [
-    "turkey", "freelance", "girisim", "yazilim",
+
+     # GENEL İŞ İLANLARI
+    "jobs",                # genel iş ilanları
+    "jobopenings",         # iş açılış duyuruları
+    "hiring",              # işe alım duyuruları
+
+    "freelance", "girisim", "yazilim",
     "SideProject", "webdev", "forhire", "startup",
-    "reactjs", "remotejs"
+    "reactjs", "remotejs",
+
+   
+
+    # UZAKTAN & FREELANCE
+    "RemoteWork",          # tüm uzaktan çalışma ilanları
+    "WorkOnline",          # online iş / gelir fırsatları
+    "Gigs",                # kısa vadeli işler, gig ekonomisi
+    "SideHustle",          # yan projeler, ek kazanç fırsatları
+
+    # TEKNİK & YAZILIM
+    "TechJobs",            # teknoloji sektöründeki işler
+    "HireADeveloper",      # geliştirici arayanlar
+
+    # DİĞER
+    "digitalnomad",        # dijital göçebe, uzaktan yaşama fırsatları
 ]
 SINCE = datetime.utcnow() - timedelta(days=1)
 
 def fetch_and_store_posts():
     for subreddit in SUBREDDITS:
         print(f"⏳ Subreddit: {subreddit}")
-        for submission in reddit.subreddit(subreddit).new(limit=100):
-            created_utc = datetime.utcfromtimestamp(submission.created_utc)
-            if created_utc > SINCE:
+        # hazırlık: generator'ı al
+        submissions = reddit.subreddit(subreddit).new(limit=100)
+        try:
+            # iteration ve isteği buraya alıyoruz
+            for submission in submissions:
+                created_utc = datetime.utcfromtimestamp(submission.created_utc)
+                if created_utc <= SINCE:
+                    continue
+
                 post = {
                     "subreddit": subreddit,
                     "title": submission.title,
@@ -46,9 +74,15 @@ def fetch_and_store_posts():
                     "url": submission.url,
                     "permalink": f"https://reddit.com{submission.permalink}"
                 }
-                # Duplicate kontrolü (aynı permalink varsa ekleme)
                 if not collection.find_one({"permalink": post["permalink"]}):
                     collection.insert_one(post)
+
+        except prawcore.exceptions.Forbidden:
+            print(f"⚠️ Erişim kısıtlı, atlanıyor: r/{subreddit}")
+            continue
+        except Exception as e:
+            print(f"⚠️ r/{subreddit} işlenirken beklenmedik hata: {e}")
+            continue
 
     print("✅ Yeni gönderiler MongoDB'ye eklendi.")
 

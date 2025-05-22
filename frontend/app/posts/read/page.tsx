@@ -31,12 +31,16 @@ export default function ReadPostsPage() {
     setSkip(offset + LIMIT);
   };
 
+  const handleRemove = (id: string) => {
+    setPosts((prev) => prev.filter((post) => post._id !== id));
+  };
+
   return (
     <div>
       <h1 className="text-xl font-semibold mb-4">📂 Okunanlar</h1>
       {posts.length === 0 && <p className="text-muted-foreground">Gösterilecek post yok.</p>}
       {posts.map((post) => (
-        <PostCard key={post._id} {...post} onRemove={() => {}} />
+        <PostCard key={post._id} {...post} onRemove={handleRemove} />
       ))}
       {hasMore && (
         <div className="flex justify-center mt-4">

@@ -32,9 +32,7 @@ export function PostCard({
     });
     console.log(field, res.status);
     if (!res.ok) throw new Error("Güncelleme başarısız");
-    if (field !== "favorite") {
-      onRemove(_id);
-    }
+    onRemove(_id);
   } finally {
     setLoading(false);
   }
