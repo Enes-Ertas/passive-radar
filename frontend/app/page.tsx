@@ -1,28 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { PostCard } from "@/components/PostCard";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [posts, setPosts] = useState<any[]>([]);
+  const router = useRouter();
 
-  useEffect(() => {
-    fetch("http://localhost:8000/posts")
-      .then((res) => res.json())
-      .then((data) => setPosts(data));
-  }, []);
-
-  const handleRemove = (id: string) => {
-    setPosts((prev) => prev.filter((post) => post._id !== id));
-  };
+  function goToPosts() {
+    router.push("/posts/unread");
+  }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-semibold mb-6">Tespit Edilen Potansiyel Müşteriler</h1>
-      {posts.length === 0 && <p className="text-sm text-muted-foreground">Henüz eşleşen post yok.</p>}
-      {posts.map((post) => (
-        <PostCard key={post._id} {...post} onRemove={handleRemove} />
-      ))}
+    <main className="max-w-2xl mx-auto px-6 py-12 text-center">
+      <h1 className="text-3xl font-bold mb-6">PassiveRadar’a Hoşgeldiniz</h1>
+      <p className="mb-8 text-gray-600">
+        Pasif müşteri sinyallerini yakalamak için sistem hazır.  
+        Postları görmek için aşağıdaki butona tıklayın.
+      </p>
+      <button
+        onClick={goToPosts}
+        className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+      >
+        Postları Görüntüle
+      </button>
     </main>
   );
 }

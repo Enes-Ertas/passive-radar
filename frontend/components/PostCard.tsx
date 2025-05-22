@@ -12,17 +12,33 @@ interface PostProps {
   onRemove: (id: string) => void;
 }
 
-export function PostCard({ _id, title, selftext, subreddit, permalink, created, onRemove }: PostProps) {
+export function PostCard({
+  _id,
+  title,
+  selftext,
+  subreddit,
+  permalink,
+  created,
+  onRemove,
+}: PostProps) {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  async function markAsIrrelevant() {
-    const res = await fetch(`http://localhost:8000/posts/${_id}`, {
-      method: "PATCH"
+  async function patchPost(field: "read" | "favorite" | "irrelevant") {
+  setLoading(true);
+  try {
+    const res = await fetch(`http://localhost:8000/posts/${_id}/${field}`, {
+      method: "PATCH",
     });
-    if (res.ok) {
-      onRemove(_id); // UI'den kaldır
+    console.log(field, res.status);
+    if (!res.ok) throw new Error("Güncelleme başarısız");
+    if (field !== "favorite") {
+      onRemove(_id);
     }
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <Card className="w-full mb-4 shadow-sm">
@@ -33,12 +49,21 @@ export function PostCard({ _id, title, selftext, subreddit, permalink, created, 
         </p>
       </CardHeader>
       <CardContent>
-        <div className={`text-sm text-gray-700 whitespace-pre-line ${!open ? "line-clamp-3" : ""}`}>
+        <div
+          className={`text-sm text-gray-700 whitespace-pre-line ${
+            !open ? "line-clamp-3" : ""
+          }`}
+        >
           {selftext}
         </div>
 
         {selftext.length > 150 && (
-          <Button variant="ghost" size="sm" className="mt-2 px-0 underline" onClick={() => setOpen(!open)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mt-2 px-0 underline"
+            onClick={() => setOpen(!open)}
+          >
             {open ? "Metni Gizle" : "Metnin Devamı"}
           </Button>
         )}
@@ -49,13 +74,33 @@ export function PostCard({ _id, title, selftext, subreddit, permalink, created, 
               Gönderiye Git
             </Button>
           </a>
+
           <Button
-  size="sm"
-  className="bg-zinc-800 text-white hover:bg-zinc-900 transition"
-  onClick={markAsIrrelevant}
->
-  Yanlış
-</Button>
+            size="sm"
+            className="bg-zinc-800 text-white hover:bg-zinc-900 transition"
+            onClick={() => patchPost("irrelevant")}
+            disabled={loading}
+          >
+            Yanlış
+          </Button>
+
+          <Button
+            size="sm"
+            className="bg-zinc-800 text-white hover:bg-zinc-900 transition"
+            onClick={() => patchPost("read")}
+            disabled={loading}
+          >
+            Okundu
+          </Button>
+
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => patchPost("favorite")}
+            disabled={loading}
+          >
+            ⭐ Favori
+          </Button>
         </div>
       </CardContent>
     </Card>

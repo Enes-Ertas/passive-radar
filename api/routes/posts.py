@@ -4,6 +4,7 @@ from bson import ObjectId
 from dotenv import load_dotenv
 from typing import Optional, List
 import os
+from datetime import datetime
 
 load_dotenv()
 
@@ -13,6 +14,35 @@ mongo_uri = os.getenv("MONGO_URI")
 client = MongoClient(mongo_uri)
 db = client["passive-radar"]
 collection = db["reddit_posts"]
+
+@router.patch("/{post_id}/read")
+def mark_as_read(post_id: str):
+    result = collection.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$set": {"is_read": True}}
+    )
+    return {"modified_count": result.modified_count}
+
+@router.patch("/{post_id}/favorite")
+def mark_as_favorite(post_id: str):
+    result = collection.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$set": {"is_favorite": True}}
+    )
+    return {"modified_count": result.modified_count}
+
+@router.patch("/{post_id}/irrelevant")
+def mark_as_irrelevant(post_id: str):
+    result = collection.update_one(
+        {"_id": ObjectId(post_id)},
+        {
+            "$set": {
+                "is_relevant": False,
+                "last_viewed_at": datetime.utcnow()
+            }
+        }
+    )
+    return {"modified_count": result.modified_count}
 
 @router.get("/")
 def get_posts(
