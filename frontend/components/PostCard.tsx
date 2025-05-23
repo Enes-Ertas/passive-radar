@@ -83,7 +83,7 @@ export function PostCard({
         <div className="mt-4 flex gap-2">
           <a href={permalink} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="sm">
-              Gönderiye Git
+              Go to Post
             </Button>
           </a>
 
@@ -93,7 +93,7 @@ export function PostCard({
             onClick={() => patchPost("irrelevant")}
             disabled={loading}
           >
-            Yanlış
+            Dismiss
           </Button>
 
           <Button
@@ -102,7 +102,7 @@ export function PostCard({
             onClick={() => patchPost("read")}
             disabled={loading}
           >
-            Okundu
+            Read
           </Button>
 
           <Button
@@ -111,7 +111,7 @@ export function PostCard({
             onClick={() => patchPost("favorite")}
             disabled={loading}
           >
-            ⭐ Favori
+            ⭐ Favorite
           </Button>
         </div>
       </CardContent>

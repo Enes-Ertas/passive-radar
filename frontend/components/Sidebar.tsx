@@ -5,12 +5,12 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "📥 Okunmamışlar", href: "/posts/unread" },
-  { label: "📂 Okunanlar", href: "/posts/read" },
-  { label: "⭐ Favoriler", href: "/posts/favorite" },
-  { label: "❌ Reddedilenler", href: "/posts/rejected" },
-  { label: "🕓 Son Görüntülenenler", href: "/posts/recent" },
-  { label: "🔖 Etiketler", href: "/posts/tags" },
+  { label: "📥 Inbox", href: "/posts/unread" },
+  { label: "📂 Read", href: "/posts/read" },
+  { label: "⭐ Favorites", href: "/posts/favorite" },
+  { label: "❌ Dismissed", href: "/posts/rejected" },
+  { label: "🕓 Recent", href: "/posts/recent" },
+  { label: "🔖 Tags", href: "/posts/tags" },
 ];
 
 export function Sidebar() {

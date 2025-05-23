@@ -7,7 +7,7 @@ import prawcore
 
 load_dotenv()
 
-# Mongo bağlantısı
+# Mongo connection
 mongo_uri = os.getenv("MONGO_URI")
 client = MongoClient(mongo_uri)
 db = client["passive-radar"]
@@ -24,46 +24,43 @@ reddit = praw.Reddit(
     user_agent=REDDIT_USER_AGENT
 )
 
-# Subreddit listesi ve zaman sınırı
+# Subreddit list and time threshold
 SUBREDDITS = [
 
-     # GENEL İŞ İLANLARI
-    "jobs",                # genel iş ilanları
-    "jobopenings",         # iş açılış duyuruları
-    "hiring",              # işe alım duyuruları
+     # GENERAL JOB LISTINGS
+    "jobs",                # general job listings
+    "jobopenings",         # job opening announcements
+    "hiring",              # hiring announcements
 
-    "freelance", "girisim", "yazilim",
     "SideProject", "webdev", "forhire", "startup",
     "reactjs", "remotejs",
 
-   
+    # REMOTE & FREELANCE
+    "RemoteWork",          # all remote work listings
+    "WorkOnline",          # online job/income opportunities
+    "Gigs",                # short-term gigs, gig economy
+    "SideHustle",          # side projects, extra earning opportunities
 
-    # UZAKTAN & FREELANCE
-    "RemoteWork",          # tüm uzaktan çalışma ilanları
-    "WorkOnline",          # online iş / gelir fırsatları
-    "Gigs",                # kısa vadeli işler, gig ekonomisi
-    "SideHustle",          # yan projeler, ek kazanç fırsatları
+    # TECH & SOFTWARE
+    "TechJobs",            # tech industry jobs
+    "HireADeveloper",      # developers wanted
 
-    # TEKNİK & YAZILIM
-    "TechJobs",            # teknoloji sektöründeki işler
-    "HireADeveloper",      # geliştirici arayanlar
-
-    # DİĞER
-    "digitalnomad",        # dijital göçebe, uzaktan yaşama fırsatları
+    # OTHER
+    "digitalnomad",        # digital nomad opportunities
 ]
-SINCE = datetime.utcnow() - timedelta(days=1)
+SINCE = datetime.utcnow() - timedelta(hours=1)
 
 def fetch_and_store_posts():
     for subreddit in SUBREDDITS:
         print(f"⏳ Subreddit: {subreddit}")
-        # hazırlık: generator'ı al
-        submissions = reddit.subreddit(subreddit).new(limit=100)
+        # prepare: get the generator
+        submissions = reddit.subreddit(subreddit).new()
         try:
-            # iteration ve isteği buraya alıyoruz
+            # iterate and process submissions here
             for submission in submissions:
                 created_utc = datetime.utcfromtimestamp(submission.created_utc)
                 if created_utc <= SINCE:
-                    continue
+                    break
 
                 post = {
                     "subreddit": subreddit,
@@ -78,13 +75,13 @@ def fetch_and_store_posts():
                     collection.insert_one(post)
 
         except prawcore.exceptions.Forbidden:
-            print(f"⚠️ Erişim kısıtlı, atlanıyor: r/{subreddit}")
+            print(f"⚠️ ⚠️ Access restricted, skipping: r/{subreddit}")
             continue
         except Exception as e:
-            print(f"⚠️ r/{subreddit} işlenirken beklenmedik hata: {e}")
+            print(f"⚠️ Unexpected error processing r/{subreddit}: {e}")
             continue
 
-    print("✅ Yeni gönderiler MongoDB'ye eklendi.")
+    print("✅ New posts added to MongoDB.")
 
 if __name__ == "__main__":
     fetch_and_store_posts()

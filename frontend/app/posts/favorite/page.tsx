@@ -41,7 +41,7 @@ export default function FavoritePostsPage() {
       {hasMore && (
         <div className="flex justify-center mt-4">
           <Button variant="outline" onClick={() => fetchPosts(skip)}>
-            Daha Fazla Göster
+            More
           </Button>
         </div>
       )}
