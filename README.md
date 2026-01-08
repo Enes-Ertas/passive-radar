@@ -1,8 +1,8 @@
-# PassiveRadar 🚨🤖
+# PassiveRadar
 
 PassiveRadar is a Python-powered job signal aggregator that passively scrapes, filters, and surfaces freelance job opportunities from Reddit with the help of AI.
 
-## Features ✨
+## Features
 
 - **Automated Scraping:** Collects new freelance-related posts from selected Reddit subreddits every hour.
 - **AI-Based Filtering:** Uses OpenAI GPT to automatically filter and flag relevant developer job offers.
@@ -18,7 +18,7 @@ PassiveRadar is a Python-powered job signal aggregator that passively scrapes, f
 - APScheduler (job scheduling)
 - _(Frontend with Next.js & Tailwind is under development.)_
 
-## Installation ⚙️
+## Installation
 
 1. Clone the repository:
 
@@ -49,7 +49,7 @@ PassiveRadar is a Python-powered job signal aggregator that passively scrapes, f
    ```
    This will run the Reddit scraper and AI filter every hour.
 
-## Folder Structure 📁
+## Folder Structure 
 
 ```
 passive-radar/
@@ -68,7 +68,7 @@ passive-radar/
 - Posts are stored in the `reddit_posts` collection in MongoDB.
 - After each scraping cycle, posts are filtered using GPT and marked as relevant or not.
 
-## Disclaimer ⚠️
+## Disclaimer 
 
 This project is an MVP and was built for personal freelance use.  
 Contributions and forks are welcome.
